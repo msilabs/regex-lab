@@ -306,8 +306,8 @@ code, pre { font-family: var(--f-code); }
 .lesson-body p, .lesson-body ul, .lesson-body ol { margin: 0 0 12px; }
 .lesson-body li { margin-bottom: 4px; }
 .lesson-body code { background: var(--surface-2); border: 1px solid var(--line); padding: 0 5px; border-radius: 5px; font-size: .9em; }
-.lesson-body pre { margin: 0 0 14px; padding: 14px; background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-sm); overflow-x: auto; font-size: 14px; line-height: 1.6; }
-.lesson-body pre code { background: none; border: 0; padding: 0; font-size: inherit; }
+.lesson-body > pre { margin: 0 0 14px; padding: 14px; background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-sm); overflow-x: auto; font-size: 14px; line-height: 1.6; }
+.lesson-body > pre code { background: none; border: 0; padding: 0; font-size: inherit; }
 .lesson-body table { width: 100%; border-collapse: collapse; margin: 0 0 14px; font-size: 15px; display: block; overflow-x: auto; }
 .lesson-body th, .lesson-body td { text-align: left; padding: 7px 12px; border-bottom: 1px solid var(--line); }
 .lesson-body th { color: var(--muted); font-size: 13px; font-weight: 600; }
@@ -322,7 +322,7 @@ code, pre { font-family: var(--f-code); }
 .try-open:hover { color: var(--accent); }
 .try .pat { min-width: 0; }
 .try .text-box { margin-top: 8px; }
-.try .text-in { min-height: 0; resize: none; }
+.try .text-in { min-height: 0; resize: none; overflow: hidden; }
 .try .errbox { margin-top: 8px; }
 
 .pager { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--line); }

@@ -57,6 +57,10 @@
         return { pattern: head.slice(1, slash), flags: head.slice(slash + 1), text: lines.join('\n') };
     }
 
+    var fits = [];
+    window.addEventListener('resize', function () { fits.forEach(function (fit) { fit(); }); });
+    document.fonts && document.fonts.ready.then(function () { fits.forEach(function (fit) { fit(); }); });
+
     function build(code) {
         var info = parseBlock(code.textContent);
         if (!info) return;
@@ -79,7 +83,14 @@
 
         input.value = info.pattern;
         area.value = info.text;
-        area.rows = Math.max(1, info.text.split('\n').length);
+        area.rows = 1;
+
+        // ঘরের উচ্চতা লেখা অনুযায়ী: লম্বা লাইন ভেঙে গেলেও পুরো লেখা দেখা যায়
+        function fit() {
+            area.style.height = 'auto';
+            area.style.height = area.scrollHeight + 'px';
+        }
+        fits.push(fit);
 
         function update() {
             var my = ++seq;
@@ -102,7 +113,8 @@
 
         var soon = U.debounce(update, 150);
         input.addEventListener('input', soon);
-        area.addEventListener('input', function () { hl.innerHTML = U.highlight(area.value, []); soon(); });
+        area.addEventListener('input', function () { hl.innerHTML = U.highlight(area.value, []); fit(); soon(); });
+        fit();
         update();
     }
 
