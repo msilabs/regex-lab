@@ -1,8 +1,26 @@
 {
     "name": "regex-lab",
     "private": true,
-    "description": "বাংলায় regex শেখা আর পরীক্ষা করার টুল: বাংলা ব্যাখ্যা, ধাপে ধাপে debugger আর বাংলাদেশি pattern",
+    "description": "বাংলায় regex শেখা আর পরীক্ষা করার টুল: বাংলাদেশি pattern, বাংলা ব্যাখ্যা, শেখার course আর challenge",
     "license": "MIT",
+    "author": "msilabs",
+    "homepage": "https://msilabs.github.io/regex-lab/",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/msilabs/regex-lab.git"
+    },
+    "bugs": {
+        "url": "https://github.com/msilabs/regex-lab/issues"
+    },
+    "keywords": [
+        "regex",
+        "regular-expression",
+        "bangla",
+        "bengali",
+        "bangladesh",
+        "learning",
+        "playground"
+    ],
     "engines": {
         "node": ">=22"
     },

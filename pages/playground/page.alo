@@ -1,11 +1,18 @@
 <head>
     <title>Playground · {{ data.site.name }}</title>
     <meta name="description" content="regex লিখুন, লেখায় কোথায় মিলছে দেখুন, আর প্রতিটা টুকরোর বাংলা ব্যাখ্যা পড়ুন। সব browser-এ চলে।">
+    <meta property="og:title" content="Playground · {{ data.site.name }}">
+    <meta property="og:description" content="regex লিখুন, লেখায় কোথায় মিলছে দেখুন, আর প্রতিটা টুকরোর বাংলা ব্যাখ্যা পড়ুন। সব browser-এ চলে।">
 </head>
 
 <template>
 <div class="wrap">
-  <section class="card">
+  <section class="page-head">
+    <h1>নিজের pattern <span class="grad">পরীক্ষা করুন</span></h1>
+    <p>pattern লিখুন, কোথায় মিলছে দেখুন, প্রতিটা টুকরোর মানে পড়ুন বাংলায়।</p>
+  </section>
+
+  <section class="card tool">
     <div class="row-flex">
       <div class="pat" id="patRow">
         <span class="pat-sl">/</span>
@@ -34,13 +41,19 @@
     <div class="row-flex bar">
       <span class="count" id="count"></span>
       <span class="spacer"></span>
-      <button type="button" class="btn small" id="btnExample">উদাহরণ</button>
-      <button type="button" class="btn small" id="btnShare">লিংক কপি</button>
+      <button type="button" class="btn small" id="btnExample">
+        <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V16h5.2v-.2c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        উদাহরণ
+      </button>
+      <button type="button" class="btn small" id="btnShare">
+        <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span class="lbl">লিংক কপি</span>
+      </button>
     </div>
   </section>
 
   <section class="card">
-    <h2>বাংলা ব্যাখ্যা</h2>
+    <h2>বাংলা ব্যাখ্যা <small>কোনো লাইনে mouse রাখলে pattern-এর সেই অংশ জ্বলে উঠবে</small></h2>
     <div id="explain"></div>
   </section>
 </div>
@@ -52,9 +65,9 @@
     var U = window.RegexUtil;
     var STORE_KEY = 'regex-lab-state';
     var EXAMPLE = {
-        pattern: '(?<operator>01[3-9])(\\d{8})',
+        pattern: '(\\+88)?01\\d{9}\\b',
         flags: 'g',
-        text: 'ফোন করুন 01712345678 অথবা 01812-345678 নম্বরে।\nঅফিস: 01912345678, ভুল নম্বর: 01212345678।'
+        text: 'ফোন করুন 01712345678 অথবা +8801712345678 নম্বরে।\nঅফিস: 01912345678, অর্ডার নম্বর: 2017123456789'
     };
 
     var $ = function (id) { return document.getElementById(id); };
@@ -212,8 +225,9 @@
         var btn = this;
         history.replaceState(null, '', '#p=' + encodeURIComponent(state.pattern) + '&f=' + encodeURIComponent(state.flags) + '&t=' + encodeURIComponent(state.text));
         U.copy(location.href).then(function (ok) {
-            btn.textContent = ok ? 'কপি হয়েছে ✓' : 'ঠিকানা বার থেকে কপি করুন';
-            setTimeout(function () { btn.textContent = 'লিংক কপি'; }, 1800);
+            var label = btn.querySelector('.lbl');
+            label.textContent = ok ? 'কপি হয়েছে ✓' : 'ঠিকানা বার থেকে কপি করুন';
+            setTimeout(function () { label.textContent = 'লিংক কপি'; }, 1800);
         });
     });
 

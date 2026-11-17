@@ -1,21 +1,23 @@
 <head>
     <title>challenge · {{ data.site.name }}</title>
     <meta name="description" content="regex অনুশীলনের {{ data.challenges.length }}টা challenge। বাংলাদেশি ফোন নম্বর থেকে lookahead আর ReDoS ঠিক করা পর্যন্ত।">
+    <meta property="og:title" content="challenge · {{ data.site.name }}">
+    <meta property="og:description" content="regex অনুশীলনের {{ data.challenges.length }}টা challenge। বাংলাদেশি ফোন নম্বর থেকে lookahead আর ReDoS ঠিক করা পর্যন্ত।">
 </head>
 
 <template>
 <div class="wrap" id="challengeApp" data-json="{{ JSON.stringify(data.challenges.map((c, i) => ({ id: c.slug || String(i + 1), title: c.title, level: c.level, type: c.type, task: c.task, cases: c.cases, hint: c.hint, solution: c.solution, flags: c.flags, replacement: c.replacement || '' }))) }}">
-  <section class="intro">
+  <section class="page-head">
     <h1>নিজে লিখে <span class="grad">পরীক্ষা দিন</span></h1>
-    <p>সব test case পাস করলে পরের challenge খুলে যাবে।</p>
+    <p>{{ data.challenges.length.toLocaleString('bn-BD') }}টা challenge, সহজ থেকে কঠিন। সব test case পাস করলে পরেরটা খুলে যাবে। অগ্রগতি শুধু আপনার browser-এ থাকে।</p>
   </section>
 
   <div class="side-layout">
-    <aside class="card side-list">
+    <aside class="card side-list ch-aside">
       <div class="progress" aria-hidden="true"><i id="progressBar"></i></div>
-      <p class="muted" id="progressText" style="margin:0 2px 6px; font-size:13px"></p>
+      <p class="progress-text" id="progressText"></p>
       <div id="chList"></div>
-      <button type="button" class="btn small" id="chReset" style="margin-top:6px">অগ্রগতি মুছুন</button>
+      <button type="button" class="reset-link" id="chReset">অগ্রগতি মুছুন</button>
     </aside>
 
     <section class="card" id="chPanel">
@@ -38,11 +40,20 @@
       </div>
       <div class="errbox" id="chErr" hidden></div>
       <div class="row-flex">
-        <button type="button" class="btn primary" id="chRun">পরীক্ষা করুন</button>
-        <button type="button" class="btn" id="chHint">ইঙ্গিত</button>
-        <button type="button" class="btn" id="chSolution">উত্তর দেখুন</button>
+        <button type="button" class="btn primary" id="chRun">
+          <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg>
+          পরীক্ষা করুন
+        </button>
+        <button type="button" class="btn" id="chHint">
+          <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V16h5.2v-.2c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          ইঙ্গিত
+        </button>
+        <button type="button" class="btn" id="chSolution">
+          <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+          উত্তর দেখুন
+        </button>
         <span class="spacer"></span>
-        <button type="button" class="btn" id="chNext" hidden>পরের challenge →</button>
+        <button type="button" class="btn soft" id="chNext" hidden>পরের challenge →</button>
       </div>
       <div class="hint-box" id="chHintBox" hidden></div>
       <div class="solution" id="chSolutionBox" hidden></div>
@@ -80,7 +91,8 @@
         list.forEach(function (c, i) {
             var open = isOpen(i);
             var cls = 'side-item' + (i === current ? ' cur' : '') + (isDone(i) ? ' done' : '');
-            var mark = isDone(i) ? '✓' : (open ? U.bn(i + 1) : '🔒');
+            var lock = '<svg viewBox="0 0 24 24" width="14" height="14" aria-label="বন্ধ"><rect x="5" y="10.5" width="14" height="10" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" fill="none" stroke="currentColor" stroke-width="2"/></svg>';
+            var mark = isDone(i) ? '✓' : (open ? U.bn(i + 1) : lock);
             html += '<button type="button" class="' + cls + '" data-i="' + i + '"' + (open ? '' : ' disabled') + '><span class="st">' + mark + '</span><span>' + U.escapeHtml(c.title) + '</span><span class="lvl">' + U.escapeHtml(c.level) + '</span></button>';
         });
         $('chList').innerHTML = html;
@@ -157,7 +169,7 @@
             if (out.allPass) {
                 if (!isDone(current)) { progress.done.push(c.id); save(); }
                 var last = current === list.length - 1;
-                $('chResult').innerHTML = '<div class="badge ok" style="margin-top:6px">🎉 সব case পাস করেছে' + (last ? ', সব challenge শেষ!' : '। পরেরটা খুলে গেছে।') + '</div>';
+                $('chResult').innerHTML = '<div class="badge ok" style="margin-top:6px">✓ সব case পাস করেছে' + (last ? ', সব challenge শেষ!' : '। পরেরটা খুলে গেছে।') + '</div>';
                 $('chNext').hidden = last;
                 renderList();
             } else {

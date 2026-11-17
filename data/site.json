@@ -1,7 +1,7 @@
 {
     "name": "Regex Lab",
     "tagline": "বাংলায় regex শেখার জায়গা",
-    "description": "regex বাংলায় বুঝুন: প্রতিটা টুকরোর বাংলা ব্যাখ্যা, engine-এর ধাপে ধাপে animation, ReDoS সতর্কবার্তা আর বাংলাদেশি ফোন, NID, পোস্টকোডের তৈরি pattern। সবকিছু browser-এ চলে।",
+    "description": "বাংলায় regex শিখুন আর পরীক্ষা করুন: বাংলাদেশি ফোন, NID, পোস্টকোডের তৈরি pattern, প্রতিটা টুকরোর বাংলা ব্যাখ্যা, শুরু থেকে শেখার course আর challenge। সবকিছু browser-এ চলে।",
     "lang": "bn",
     "url": "https://msilabs.github.io",
     "repo": "https://github.com/msilabs/regex-lab"

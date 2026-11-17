@@ -1,6 +1,8 @@
 <head>
     <title>{{ item.title }} · Learn · {{ data.site.name }}</title>
     <meta name="description" content="{{ item.summary }}">
+    <meta property="og:title" content="{{ item.title }} · Learn · {{ data.site.name }}">
+    <meta property="og:description" content="{{ item.summary }}">
 </head>
 
 <template>

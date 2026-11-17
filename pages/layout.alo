@@ -1,16 +1,20 @@
 <head>
     <title>{{ data.site.name }} · {{ data.site.tagline }}</title>
     <meta name="description" content="{{ data.site.description }}">
-    <link rel="canonical" href="{{ data.site.url }}/{{ data.site.repo.split('/').pop() }}/">
+    <link rel="canonical" href="{{ data.site.url }}/{{ data.site.repo.split('/').pop() }}{{ route.path }}">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <meta name="theme-color" content="#f5f7f8" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#0a0f12" media="(prefers-color-scheme: dark)">
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="msilabs">
-    <meta property="og:title" content="{{ data.site.name }}">
+    <meta property="og:site_name" content="{{ data.site.name }}">
+    <meta property="og:locale" content="bn_BD">
+    <meta property="og:title" content="{{ data.site.name }} · {{ data.site.tagline }}">
     <meta property="og:description" content="{{ data.site.description }}">
-    <meta property="og:url" content="{{ data.site.url }}/{{ data.site.repo.split('/').pop() }}/">
+    <meta property="og:url" content="{{ data.site.url }}/{{ data.site.repo.split('/').pop() }}{{ route.path }}">
     <meta property="og:image" content="{{ data.site.url }}/{{ data.site.repo.split('/').pop() }}/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Regex Lab: বাংলায় regex শেখা আর পরীক্ষার জায়গা">
     <meta name="twitter:card" content="summary_large_image">
     <script>try { var t = localStorage.getItem('msilabs-theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
