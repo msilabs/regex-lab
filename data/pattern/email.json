@@ -1,0 +1,20 @@
+{
+    "title": "email ঠিকানা (সহজ)",
+    "category": "common",
+    "pattern": "^[\\w.+-]+@[A-Za-z0-9-]+(?:\\.[A-Za-z0-9-]+)*\\.[A-Za-z]{2,}$",
+    "flags": "",
+    "explain": "নাম অংশে অক্ষর, সংখ্যা আর _ . + -, তারপর @ আর domain, শেষে অন্তত ২ অক্ষরের অংশ, যেমন .com বা .bd।",
+    "should_match": [
+        "user@example.com",
+        "a.b+tag@sub.site.co",
+        "x_y@my-site.org"
+    ],
+    "should_not_match": [
+        "user@",
+        "@example.com",
+        "user@example",
+        "a b@example.com"
+    ],
+    "notes": "RFC-এর পুরো নিয়ম regex দিয়ে ধরা যায় না। এটা বেশিরভাগ ফর্মের জন্য যথেষ্ট। আসল যাচাই হলো confirmation email।",
+    "order": 2
+}

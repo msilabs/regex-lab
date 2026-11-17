@@ -1,0 +1,31 @@
+{
+    "title": "ধীর pattern-টা ঠিক করো",
+    "level": "কঠিন",
+    "type": "match",
+    "task": "\"(a+)+$\" আসলে শুধু a দিয়ে গড়া লেখা মেলানোর কাজ করে, কিন্তু \"aaaa…!\" দিলে সার্ভার আটকে দেয়। একই কাজ করে এমন নিরাপদ pattern লিখুন। শেষের পরীক্ষাটা আটকে দেবে না এমন হতে হবে।",
+    "cases": [
+        {
+            "text": "aaaa",
+            "expect": true
+        },
+        {
+            "text": "a",
+            "expect": true
+        },
+        {
+            "text": "aab",
+            "expect": false
+        },
+        {
+            "text": "",
+            "expect": false
+        },
+        {
+            "text": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!",
+            "expect": false
+        }
+    ],
+    "hint": "ভেতরে + আর বাইরে + দুটো লাগে না। একটাই যথেষ্ট। শুরু আর শেষও ধরুন।",
+    "solution": "^a+$",
+    "flags": ""
+}

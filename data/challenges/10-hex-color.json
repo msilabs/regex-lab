@@ -1,0 +1,35 @@
+{
+    "title": "hex রং",
+    "level": "মাঝারি",
+    "type": "match",
+    "task": "# চিহ্ন দিয়ে শুরু, তারপর ঠিক ৩ বা ৬টা hex অঙ্ক। বড়-ছোট হাতের অক্ষর দুটোই চলবে (i flag)।",
+    "cases": [
+        {
+            "text": "#fff",
+            "expect": true
+        },
+        {
+            "text": "#1ED6A8",
+            "expect": true
+        },
+        {
+            "text": "#14213d",
+            "expect": true
+        },
+        {
+            "text": "fff",
+            "expect": false
+        },
+        {
+            "text": "#ffff",
+            "expect": false
+        },
+        {
+            "text": "#ggg",
+            "expect": false
+        }
+    ],
+    "hint": "(?:[0-9a-f]{3}|[0-9a-f]{6}) আকারের একটা বিকল্প ভাবুন।",
+    "solution": "^#(?:[0-9a-f]{3}|[0-9a-f]{6})$",
+    "flags": "i"
+}

@@ -1,0 +1,219 @@
+<head>
+    <title>challenge · {{ data.site.name }}</title>
+    <meta name="description" content="regex অনুশীলনের {{ data.challenges.length }}টা challenge। বাংলাদেশি ফোন নম্বর থেকে lookahead আর ReDoS ঠিক করা পর্যন্ত।">
+</head>
+
+<template>
+<div class="wrap" id="challengeApp" data-json="{{ JSON.stringify(data.challenges.map((c, i) => ({ id: c.slug || String(i + 1), title: c.title, level: c.level, type: c.type, task: c.task, cases: c.cases, hint: c.hint, solution: c.solution, flags: c.flags, replacement: c.replacement || '' }))) }}">
+  <section class="intro">
+    <h1>নিজে লিখে <span class="grad">পরীক্ষা দিন</span></h1>
+    <p>সব test case পাস করলে পরের challenge খুলে যাবে।</p>
+  </section>
+
+  <div class="side-layout">
+    <aside class="card side-list">
+      <div class="progress" aria-hidden="true"><i id="progressBar"></i></div>
+      <p class="muted" id="progressText" style="margin:0 2px 6px; font-size:13px"></p>
+      <div id="chList"></div>
+      <button type="button" class="btn small" id="chReset" style="margin-top:6px">অগ্রগতি মুছুন</button>
+    </aside>
+
+    <section class="card" id="chPanel">
+      <h2 id="chTitle"></h2>
+      <p id="chTask"></p>
+      <div class="row-flex" style="margin:10px 0">
+        <div class="pat" id="chPatRow">
+          <span class="pat-sl">/</span>
+          <div class="pat-box"><input class="pat-in plain" id="chPattern" type="text" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="আপনার pattern" placeholder="pattern লিখুন"></div>
+          <span class="pat-sl">/</span>
+        </div>
+        <div class="flagbar" id="chFlags" role="group" aria-label="flag">
+          <button type="button" class="flag" data-flag="g" aria-pressed="false">g</button>
+          <button type="button" class="flag" data-flag="i" aria-pressed="false">i</button>
+          <button type="button" class="flag" data-flag="m" aria-pressed="false">m</button>
+        </div>
+      </div>
+      <div class="rep-row" id="chRepRow" hidden style="margin-bottom:10px">
+        <input id="chReplacement" type="text" spellcheck="false" autocomplete="off" aria-label="বদলে কী বসবে" placeholder="বদলে কী বসবে">
+      </div>
+      <div class="errbox" id="chErr" hidden></div>
+      <div class="row-flex">
+        <button type="button" class="btn primary" id="chRun">পরীক্ষা করুন</button>
+        <button type="button" class="btn" id="chHint">ইঙ্গিত</button>
+        <button type="button" class="btn" id="chSolution">উত্তর দেখুন</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn" id="chNext" hidden>পরের challenge →</button>
+      </div>
+      <div class="hint-box" id="chHintBox" hidden></div>
+      <div class="solution" id="chSolutionBox" hidden></div>
+      <div class="ch-cases" id="chCases"></div>
+      <div id="chResult"></div>
+    </section>
+  </div>
+</div>
+</template>
+
+<script>
+(function () {
+    var app = document.getElementById('challengeApp');
+    var U = window.RegexUtil;
+    var Engine = window.RegexEngine;
+    var list = JSON.parse(app.dataset.json);
+    var KEY = 'regex-lab-progress';
+    var progress = U.store.get(KEY) || { done: [], drafts: {} };
+    var current = 0;
+    var flagsOn = '';
+
+    var $ = function (id) { return document.getElementById(id); };
+
+    function save() { U.store.set(KEY, progress); }
+    function isDone(i) { return progress.done.indexOf(list[i].id) !== -1; }
+    function isOpen(i) { return i === 0 || isDone(i) || isDone(i - 1); }
+
+    function firstOpenUndone() {
+        for (var i = 0; i < list.length; i++) if (!isDone(i)) return i;
+        return list.length - 1;
+    }
+
+    function renderList() {
+        var html = '';
+        list.forEach(function (c, i) {
+            var open = isOpen(i);
+            var cls = 'side-item' + (i === current ? ' cur' : '') + (isDone(i) ? ' done' : '');
+            var mark = isDone(i) ? '✓' : (open ? U.bn(i + 1) : '🔒');
+            html += '<button type="button" class="' + cls + '" data-i="' + i + '"' + (open ? '' : ' disabled') + '><span class="st">' + mark + '</span><span>' + U.escapeHtml(c.title) + '</span><span class="lvl">' + U.escapeHtml(c.level) + '</span></button>';
+        });
+        $('chList').innerHTML = html;
+        var done = progress.done.filter(function (id) { return list.some(function (c) { return c.id === id; }); }).length;
+        $('progressBar').style.width = (done / list.length * 100) + '%';
+        $('progressText').textContent = U.bn(done) + ' / ' + U.bn(list.length) + 'টা শেষ';
+    }
+
+    function renderCases(results) {
+        var c = list[current];
+        var html = '';
+        c.cases.forEach(function (tc, i) {
+            var r = results ? results[i] : null;
+            var cls = 'ch-case' + (r ? (r.pass ? ' pass' : ' fail') : '');
+            var mark = r ? (r.pass ? '✓' : '✗') : '·';
+            var want;
+            if (c.type === 'match') want = tc.expect ? 'মিলতে হবে' : 'মিলবে না';
+            else if (c.type === 'extract') want = 'চাই: ' + JSON.stringify(tc.expect);
+            else want = 'চাই: ' + JSON.stringify(tc.expect);
+            var got = '';
+            if (r && !r.pass) {
+                if (c.type === 'match') got = 'আপনার pattern ' + (r.got ? 'মিলেছে' : 'মেলেনি');
+                else got = 'পেয়েছেন: ' + JSON.stringify(r.got);
+            }
+            html += '<div class="' + cls + '"><span class="mk">' + mark + '</span><span class="tx">' + U.escapeHtml(tc.text === '' ? '(খালি লেখা)' : tc.text) + '</span><span class="want">' + U.escapeHtml(want) + (got ? '<br>' + U.escapeHtml(got) : '') + '</span></div>';
+        });
+        $('chCases').innerHTML = html;
+    }
+
+    function syncFlags() {
+        document.querySelectorAll('#chFlags .flag').forEach(function (b) {
+            var on = flagsOn.indexOf(b.dataset.flag) !== -1;
+            b.classList.toggle('on', on);
+            b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        });
+    }
+
+    function load(i) {
+        current = i;
+        var c = list[i];
+        var draft = progress.drafts[c.id] || {};
+        $('chTitle').innerHTML = U.escapeHtml(c.title) + '<small>' + U.escapeHtml(c.level) + '</small>';
+        $('chTask').textContent = c.task;
+        $('chPattern').value = draft.pattern || '';
+        $('chReplacement').value = draft.replacement || '';
+        flagsOn = draft.flags !== undefined ? draft.flags : (c.type === 'match' ? '' : 'g');
+        $('chRepRow').hidden = c.type !== 'replace';
+        $('chErr').hidden = true;
+        $('chHintBox').hidden = true;
+        $('chSolutionBox').hidden = true;
+        $('chResult').innerHTML = '';
+        $('chNext').hidden = !(isDone(i) && i < list.length - 1);
+        syncFlags();
+        renderCases(null);
+        renderList();
+    }
+
+    function saveDraft() {
+        var c = list[current];
+        progress.drafts[c.id] = { pattern: $('chPattern').value, flags: flagsOn, replacement: $('chReplacement').value };
+        save();
+    }
+
+    function run() {
+        var c = list[current];
+        var pattern = $('chPattern').value;
+        $('chResult').innerHTML = '';
+        if (pattern === '') { $('chErr').textContent = 'আগে একটা pattern লিখুন।'; $('chErr').hidden = false; return; }
+        $('chErr').hidden = true;
+        saveDraft();
+        Engine.call('challenge', { kind: c.type, pattern: pattern, flags: flagsOn, cases: c.cases, replacement: $('chReplacement').value }).then(function (out) {
+            if (out.error) { $('chErr').textContent = out.error.message; $('chErr').hidden = false; return; }
+            renderCases(out.results);
+            if (out.allPass) {
+                if (!isDone(current)) { progress.done.push(c.id); save(); }
+                var last = current === list.length - 1;
+                $('chResult').innerHTML = '<div class="badge ok" style="margin-top:6px">🎉 সব case পাস করেছে' + (last ? ', সব challenge শেষ!' : '। পরেরটা খুলে গেছে।') + '</div>';
+                $('chNext').hidden = last;
+                renderList();
+            } else {
+                var failed = out.results.filter(function (r) { return !r.pass; }).length;
+                $('chResult').innerHTML = '<div class="badge bad" style="margin-top:6px">' + U.bn(failed) + 'টা case পাস করেনি। লাল গুলো দেখুন।</div>';
+            }
+        }, function (reason) {
+            $('chErr').textContent = reason && reason.timeout ? U.timeoutMessage : 'পরীক্ষা শেষ করা গেল না।';
+            $('chErr').hidden = false;
+        });
+    }
+
+    $('chList').addEventListener('click', function (event) {
+        var btn = event.target.closest('[data-i]');
+        if (btn && !btn.disabled) load(Number(btn.dataset.i));
+    });
+    document.querySelectorAll('#chFlags .flag').forEach(function (b) {
+        b.addEventListener('click', function () {
+            var f = b.dataset.flag;
+            flagsOn = flagsOn.indexOf(f) === -1 ? flagsOn + f : flagsOn.replace(f, '');
+            syncFlags();
+            saveDraft();
+        });
+    });
+    $('chPattern').addEventListener('input', saveDraft);
+    $('chReplacement').addEventListener('input', saveDraft);
+    $('chPattern').addEventListener('keydown', function (event) { if (event.key === 'Enter') run(); });
+    $('chRun').addEventListener('click', run);
+    $('chHint').addEventListener('click', function () {
+        var box = $('chHintBox');
+        box.textContent = '💡 ' + list[current].hint;
+        box.hidden = false;
+    });
+    $('chSolution').addEventListener('click', function () {
+        var c = list[current];
+        var box = $('chSolutionBox');
+        box.innerHTML = '<b>একটা সম্ভাব্য উত্তর:</b> <code>/' + U.escapeHtml(c.solution) + '/' + U.escapeHtml(c.flags) + '</code>'
+            + (c.type === 'replace' ? '<br>বদলে বসবে: <code>' + U.escapeHtml(c.replacement) + '</code>' : '')
+            + '<div style="margin-top:8px"><button type="button" class="btn small" id="chUse">এটা ঘরে বসান</button></div>';
+        box.hidden = false;
+        $('chUse').addEventListener('click', function () {
+            $('chPattern').value = c.solution;
+            flagsOn = c.flags;
+            $('chReplacement').value = c.replacement;
+            syncFlags();
+            saveDraft();
+        });
+    });
+    $('chNext').addEventListener('click', function () { load(Math.min(list.length - 1, current + 1)); });
+    $('chReset').addEventListener('click', function () {
+        if (!window.confirm('সব অগ্রগতি আর লেখা draft মুছে যাবে। নিশ্চিত?')) return;
+        progress = { done: [], drafts: {} };
+        save();
+        load(0);
+    });
+
+    load(firstOpenUndone());
+})();
+</script>

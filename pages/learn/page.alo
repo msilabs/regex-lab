@@ -1,0 +1,27 @@
+<head>
+    <title>Learn · {{ data.site.name }}</title>
+    <meta name="description" content="regex বাংলায় শুরু থেকে শিখুন: {{ data.learn.length }}টা ছোট পাঠ, প্রতিটায় নিজে বদলে দেখার উদাহরণ।">
+</head>
+
+<template>
+<div class="wrap narrow">
+  <section class="intro">
+    <h1>regex <span class="grad">শুরু থেকে শিখুন</span></h1>
+    <p>{{ data.learn.length }}টা ছোট পাঠ, একটার পর একটা। প্রতিটায় এমন উদাহরণ আছে যা নিজে বদলে দেখা যায়।</p>
+  </section>
+
+  <ol class="course">
+    <template for="l in data.learn.toSorted((a, b) => a.order - b.order)">
+      <li>
+        <a class="card course-item" href="/learn/{{ l.slug }}/">
+          <span class="num">{{ l.order.toLocaleString('bn-BD') }}</span>
+          <span class="txt">
+            <b>{{ l.title }}</b>
+            <span>{{ l.summary }}</span>
+          </span>
+        </a>
+      </li>
+    </template>
+  </ol>
+</div>
+</template>

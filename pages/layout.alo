@@ -1,0 +1,25 @@
+<head>
+    <title>{{ data.site.name }} · {{ data.site.tagline }}</title>
+    <meta name="description" content="{{ data.site.description }}">
+    <link rel="canonical" href="{{ data.site.url }}/{{ data.site.repo.split('/').pop() }}/">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#f5f7f8" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0a0f12" media="(prefers-color-scheme: dark)">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="msilabs">
+    <meta property="og:title" content="{{ data.site.name }}">
+    <meta property="og:description" content="{{ data.site.description }}">
+    <meta property="og:url" content="{{ data.site.url }}/{{ data.site.repo.split('/').pop() }}/">
+    <meta property="og:image" content="{{ data.site.url }}/{{ data.site.repo.split('/').pop() }}/og.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <script>try { var t = localStorage.getItem('msilabs-theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@600;800&family=Noto+Sans+Bengali:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap">
+</head>
+
+<template>
+    <SiteHeader />
+    <slot />
+    <SiteFooter />
+</template>

@@ -1,0 +1,224 @@
+<head>
+    <title>Playground · {{ data.site.name }}</title>
+    <meta name="description" content="regex লিখুন, লেখায় কোথায় মিলছে দেখুন, আর প্রতিটা টুকরোর বাংলা ব্যাখ্যা পড়ুন। সব browser-এ চলে।">
+</head>
+
+<template>
+<div class="wrap">
+  <section class="card">
+    <div class="row-flex">
+      <div class="pat" id="patRow">
+        <span class="pat-sl">/</span>
+        <div class="pat-box">
+          <pre class="pat-hl" id="patHl" aria-hidden="true"></pre>
+          <input class="pat-in" id="pattern" type="text" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="regex pattern" placeholder="যেমন: 01[3-9]\d{8}">
+        </div>
+        <span class="pat-sl">/</span>
+      </div>
+      <div class="flagbar" id="flagbar" role="group" aria-label="flag">
+        <button type="button" class="flag" data-flag="g" title="g: সব মিল খোঁজে, প্রথমটায় থামে না">g</button>
+        <button type="button" class="flag" data-flag="i" title="i: বড় হাত আর ছোট হাতের অক্ষর একই ধরে">i</button>
+        <button type="button" class="flag" data-flag="m" title="m: ^ আর $ প্রতিটা লাইনের শুরু আর শেষ ধরে">m</button>
+        <button type="button" class="flag" data-flag="s" title="s: . নতুন লাইনও ধরে">s</button>
+        <button type="button" class="flag" data-flag="u" title="u: Unicode পুরোপুরি বোঝে, \p{Script=Bengali} চলে">u</button>
+      </div>
+    </div>
+    <div class="errbox" id="errBox" hidden></div>
+    <div class="redos-line" id="redos" hidden></div>
+
+    <div class="text-box">
+      <pre class="text-hl" id="textHl" aria-hidden="true"></pre>
+      <textarea class="text-in" id="text" spellcheck="false" aria-label="test করার লেখা" placeholder="এখানে test করার লেখা বসান"></textarea>
+    </div>
+
+    <div class="row-flex bar">
+      <span class="count" id="count"></span>
+      <span class="spacer"></span>
+      <button type="button" class="btn small" id="btnExample">উদাহরণ</button>
+      <button type="button" class="btn small" id="btnShare">লিংক কপি</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>বাংলা ব্যাখ্যা</h2>
+    <div id="explain"></div>
+  </section>
+</div>
+</template>
+
+<script>
+(function () {
+    var Engine = window.RegexEngine;
+    var U = window.RegexUtil;
+    var STORE_KEY = 'regex-lab-state';
+    var EXAMPLE = {
+        pattern: '(?<operator>01[3-9])(\\d{8})',
+        flags: 'g',
+        text: 'ফোন করুন 01712345678 অথবা 01812-345678 নম্বরে।\nঅফিস: 01912345678, ভুল নম্বর: 01212345678।'
+    };
+
+    var $ = function (id) { return document.getElementById(id); };
+    var state = { pattern: '', flags: 'g', text: '' };
+    var tokens = [];
+    var matches = [];
+    var errorRange = null;
+    var focusRange = null;
+    var explainLines = [];
+    var seq = 0;
+
+    function renderPattern() {
+        var p = state.pattern;
+        var cuts = [0, p.length];
+        tokens.forEach(function (t) { cuts.push(t.start, t.end); });
+        [errorRange, focusRange].forEach(function (r) { if (r) cuts.push(r.start, r.end); });
+        cuts = cuts.filter(function (c) { return c >= 0 && c <= p.length; }).sort(function (a, b) { return a - b; });
+        var html = '';
+        for (var i = 0; i < cuts.length - 1; i++) {
+            var a = cuts[i];
+            var b = cuts[i + 1];
+            if (a === b) continue;
+            var cls = 't-char';
+            tokens.forEach(function (t) { if (t.start <= a && t.end >= b) cls = 't-' + t.kind; });
+            if (errorRange && errorRange.start <= a && errorRange.end >= b) cls += ' t-err';
+            if (focusRange && focusRange.start <= a && focusRange.end >= b) cls += ' t-focus';
+            html += '<span class="' + cls + '">' + U.escapeHtml(p.slice(a, b)) + '</span>';
+        }
+        $('patHl').innerHTML = html + ' ';
+        $('patHl').scrollLeft = $('pattern').scrollLeft;
+    }
+
+    function renderText() {
+        $('textHl').innerHTML = U.highlight(state.text, matches);
+    }
+
+    function renderExplain(data) {
+        var box = $('explain');
+        if (!data || data.error) {
+            explainLines = [];
+            box.innerHTML = '<p class="empty">' + (state.pattern === '' ? 'pattern লিখলে প্রতিটা টুকরোর মানে এখানে আসবে।' : 'আগে pattern-এর ভুলটা ঠিক করুন।') + '</p>';
+            return;
+        }
+        explainLines = data.lines;
+        var html = '';
+        data.lines.forEach(function (line, i) {
+            html += '<div class="ex-line' + (line.branch ? ' branch' : '') + '" data-i="' + i + '" style="margin-left:' + (line.depth * 16) + 'px">'
+                + '<code class="ex-raw">' + U.escapeHtml(line.raw) + '</code><span>' + U.escapeHtml(line.text) + '</span></div>';
+        });
+        data.warnings.forEach(function (w) { html += '<div class="warnbox">⚠ ' + U.escapeHtml(w) + '</div>'; });
+        box.innerHTML = html;
+    }
+
+    function renderRedos(data) {
+        var box = $('redos');
+        if (!data || data.risk === 'none') { box.hidden = true; return; }
+        box.className = 'redos-line' + (data.risk === 'danger' ? ' danger' : '');
+        box.innerHTML = '<b>' + (data.risk === 'danger' ? '🛑 ' : '⚠ ') + U.escapeHtml(data.message) + '</b> ' + U.escapeHtml(data.suggestion)
+            + ' <a href="' + (document.documentElement.dataset.base || '/') + 'learn/redos/">কেন? →</a>';
+        box.hidden = false;
+    }
+
+    function showError(error) {
+        $('errBox').hidden = !error;
+        $('patRow').classList.toggle('bad', !!error);
+        errorRange = null;
+        if (!error) return;
+        $('errBox').textContent = error.message;
+        if (error.pos >= 0) errorRange = { start: error.pos, end: Math.min(state.pattern.length, error.pos + Math.max(1, error.length)) };
+    }
+
+    function update() {
+        var my = ++seq;
+        if (state.pattern === '') {
+            tokens = [];
+            matches = [];
+            showError(null);
+            renderPattern();
+            renderText();
+            renderExplain(null);
+            renderRedos(null);
+            $('count').textContent = '';
+            return;
+        }
+        var payload = { pattern: state.pattern, flags: state.flags, text: state.text, mode: 'match' };
+        var mine = function (fn) { return function (value) { if (my === seq) fn(value); }; };
+
+        Engine.call('explain', payload).then(mine(function (data) {
+            tokens = data.error ? [] : data.tokens;
+            renderPattern();
+            renderExplain(data);
+        }), function () {});
+        Engine.call('redos', payload).then(mine(renderRedos), function () {});
+
+        // match সবশেষে: native engine আটকে গেলেও ব্যাখ্যা আর সতর্কবার্তা ততক্ষণে চলে আসে
+        Engine.call('match', payload).then(mine(function (out) {
+            showError(out.error);
+            renderPattern();
+            matches = out.error ? [] : out.matches;
+            renderText();
+            $('count').textContent = out.error ? '' : (out.total ? U.bn(out.total) + 'টা মিল' : 'কোনো মিল নেই');
+        }), mine(function (reason) {
+            matches = [];
+            renderText();
+            $('count').textContent = reason && reason.timeout ? U.timeoutMessage : 'কাজটা শেষ করা গেল না।';
+        }));
+    }
+
+    var updateSoon = U.debounce(update, 150);
+    var saveSoon = U.debounce(function () { U.store.set(STORE_KEY, state); }, 300);
+
+    function syncControls() {
+        $('pattern').value = state.pattern;
+        $('text').value = state.text;
+        document.querySelectorAll('#flagbar .flag').forEach(function (b) {
+            b.classList.toggle('on', state.flags.indexOf(b.dataset.flag) !== -1);
+        });
+    }
+
+    function setState(next) {
+        state = { pattern: next.pattern || '', flags: next.flags === undefined ? 'g' : next.flags, text: next.text || '' };
+        syncControls();
+        renderPattern();
+        renderText();
+        update();
+    }
+
+    $('pattern').addEventListener('input', function () { state.pattern = this.value; renderPattern(); saveSoon(); updateSoon(); });
+    $('pattern').addEventListener('scroll', function () { $('patHl').scrollLeft = this.scrollLeft; });
+    $('text').addEventListener('input', function () { state.text = this.value; renderText(); saveSoon(); updateSoon(); });
+    $('text').addEventListener('scroll', function () { $('textHl').scrollTop = this.scrollTop; });
+
+    document.querySelectorAll('#flagbar .flag').forEach(function (b) {
+        b.addEventListener('click', function () {
+            var f = b.dataset.flag;
+            state.flags = state.flags.indexOf(f) === -1 ? state.flags + f : state.flags.replace(f, '');
+            syncControls();
+            saveSoon();
+            update();
+        });
+    });
+
+    $('explain').addEventListener('mouseover', function (event) {
+        var line = event.target.closest('.ex-line');
+        if (!line) return;
+        var info = explainLines[Number(line.dataset.i)];
+        focusRange = { start: info.start, end: info.end };
+        renderPattern();
+    });
+    $('explain').addEventListener('mouseleave', function () { focusRange = null; renderPattern(); });
+
+    $('btnExample').addEventListener('click', function () { setState(EXAMPLE); saveSoon(); });
+
+    $('btnShare').addEventListener('click', function () {
+        var btn = this;
+        history.replaceState(null, '', '#p=' + encodeURIComponent(state.pattern) + '&f=' + encodeURIComponent(state.flags) + '&t=' + encodeURIComponent(state.text));
+        U.copy(location.href).then(function (ok) {
+            btn.textContent = ok ? 'কপি হয়েছে ✓' : 'ঠিকানা বার থেকে কপি করুন';
+            setTimeout(function () { btn.textContent = 'লিংক কপি'; }, 1800);
+        });
+    });
+
+    var fromLink = U.readHash();
+    if (fromLink) setState({ pattern: fromLink.p, flags: fromLink.f, text: fromLink.t });
+    else setState(U.store.get(STORE_KEY) || EXAMPLE);
+})();
+</script>

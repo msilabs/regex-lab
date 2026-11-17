@@ -1,0 +1,20 @@
+{
+    "title": "username",
+    "category": "common",
+    "pattern": "^[A-Za-z][\\w.-]{2,19}$",
+    "flags": "",
+    "explain": "প্রথমে একটা ইংরেজি অক্ষর, তারপর অক্ষর, সংখ্যা, _ . বা -। মোট দৈর্ঘ্য ৩ থেকে ২০ অক্ষর, ফাঁকা জায়গা চলবে না।",
+    "should_match": [
+        "msilabs",
+        "user_01",
+        "a.b-c"
+    ],
+    "should_not_match": [
+        "1user",
+        "ab",
+        "user name",
+        "aaaaaaaaaaaaaaaaaaaaa"
+    ],
+    "notes": "",
+    "order": 14
+}

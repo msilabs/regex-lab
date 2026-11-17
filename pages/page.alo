@@ -1,0 +1,70 @@
+<template>
+<div class="wrap">
+  <section class="hero-home">
+    <div class="hero-copy">
+      <h1>Regex, এবার <span class="grad">বাংলায়</span></h1>
+      <p>ফোন, NID, পোস্টকোডের তৈরি pattern, বাংলা ব্যাখ্যা আর চার ভাষার কোড। সাথে শেখার course ও challenge।</p>
+      <div class="hero-actions">
+        <a class="cta" href="/playground/">Playground-এ লিখুন <span class="cta-arrow" aria-hidden="true">→</span></a>
+        <a class="cta ghost" href="/learn/">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M3 6.5c2.8-1.4 5.8-1.4 9 .5 3.2-1.9 6.2-1.9 9-.5V18c-2.8-1.4-5.8-1.4-9 .5-3.2-1.9-6.2-1.9-9-.5z M12 7v11.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg>
+          শেখা শুরু করুন
+        </a>
+      </div>
+      <ul class="facts">
+        <li>browser-এই চলে</li>
+        <li>login লাগে না</li>
+        <li>বিনামূল্যে</li>
+      </ul>
+    </div>
+
+    <div class="hero-visual" aria-hidden="true">
+      <div class="win">
+        <div class="win-bar"><i></i><i></i><i></i><span>Playground</span></div>
+        <div class="win-body">
+          <div class="peek-pat"><span class="t-anchor">/</span><span class="t-char">01</span><span class="t-class">[3-9]</span><span class="t-escape">\d</span><span class="t-quant">{8}</span><span class="t-anchor">/g</span></div>
+          <div class="peek-text">ফোন <span class="hm">01712345678</span>, ভুল 01212345678</div>
+          <div class="peek-ex">
+            <div><code class="t-char">01</code><span>অক্ষর "0" আর "1" হুবহু</span></div>
+            <div><code class="t-class">[3-9]</code><span>"3" থেকে "9"-এর একটা</span></div>
+            <div><code class="t-escape">\d</code><code class="t-quant">{8}</code><span>ঠিক ৮টা সংখ্যা</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec-head" id="patterns">
+    <h2 class="section-title">Pattern সংগ্রহ</h2>
+    <div class="utabs-row">
+      <div class="utabs" id="filter" role="group" aria-label="ধরন">
+        <button type="button" class="chip on" data-cat="all">সব ({{ data.pattern.length.toLocaleString('bn-BD') }})</button>
+        <button type="button" class="chip" data-cat="bd">বাংলাদেশি ({{ data.pattern.filter((p) => p.category === 'bd').length.toLocaleString('bn-BD') }})</button>
+        <button type="button" class="chip" data-cat="common">সাধারণ ({{ data.pattern.filter((p) => p.category === 'common').length.toLocaleString('bn-BD') }})</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="lib-grid" id="grid">
+    <template for="p in data.pattern.toSorted((a, b) => a.order - b.order)">
+      <PatternCard p="{{ p }}" />
+    </template>
+  </div>
+</div>
+</template>
+
+<script>
+(function () {
+    var chips = document.querySelectorAll('#filter .chip');
+    var cards = document.querySelectorAll('#grid .pcard');
+
+    chips.forEach(function (chip) {
+        chip.addEventListener('click', function () {
+            chips.forEach(function (c) { c.classList.toggle('on', c === chip); });
+            cards.forEach(function (card) {
+                card.hidden = chip.dataset.cat !== 'all' && card.dataset.cat !== chip.dataset.cat;
+            });
+        });
+    });
+})();
+</script>

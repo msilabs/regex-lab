@@ -1,0 +1,17 @@
+{
+    "name": "regex-lab",
+    "private": true,
+    "description": "বাংলায় regex শেখা আর পরীক্ষা করার টুল: বাংলা ব্যাখ্যা, ধাপে ধাপে debugger আর বাংলাদেশি pattern",
+    "license": "MIT",
+    "engines": {
+        "node": ">=22"
+    },
+    "scripts": {
+        "dev": "alo dev",
+        "build": "alo build",
+        "test": "node --test tests/*.test.mjs"
+    },
+    "devDependencies": {
+        "@msilabs/alo": "^1.2.2"
+    }
+}

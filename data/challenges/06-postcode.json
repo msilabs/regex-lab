@@ -1,0 +1,35 @@
+{
+    "title": "৪ সংখ্যার পোস্টকোড",
+    "level": "মাঝারি",
+    "type": "match",
+    "task": "ঠিক ৪ সংখ্যা, প্রথম সংখ্যা 0 হবে না।",
+    "cases": [
+        {
+            "text": "1207",
+            "expect": true
+        },
+        {
+            "text": "9400",
+            "expect": true
+        },
+        {
+            "text": "0123",
+            "expect": false
+        },
+        {
+            "text": "123",
+            "expect": false
+        },
+        {
+            "text": "12345",
+            "expect": false
+        },
+        {
+            "text": "12a4",
+            "expect": false
+        }
+    ],
+    "hint": "প্রথম অঙ্কের জন্য [1-9], বাকি তিনটার জন্য \\d{3}।",
+    "solution": "^[1-9]\\d{3}$",
+    "flags": ""
+}

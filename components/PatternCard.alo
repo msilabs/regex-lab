@@ -1,0 +1,24 @@
+<template>
+    <article class="card pcard" data-cat="{{ props.p.category }}">
+        <div class="pcard-head">
+            <h3><a href="/pattern/{{ props.p.slug }}/">{{ props.p.title }}</a></h3>
+            <span class="tag {{ props.p.category }}">{{ props.p.category === 'bd' ? 'বাংলাদেশি' : 'সাধারণ' }}</span>
+        </div>
+        <PatternCode text="/{{ props.p.pattern }}/{{ props.p.flags }}" />
+        <div class="pcard-ex">
+            <span class="ex yes" title="মেলে">{{ props.p.should_match[0] }}</span>
+            <span class="ex no" title="মেলে না">{{ props.p.should_not_match.find((t) => t !== '') }}</span>
+        </div>
+        <p>{{ props.p.explain }}</p>
+        <div class="pcard-actions">
+            <a class="act primary" href="/pattern/{{ props.p.slug }}/">
+                <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M8.5 7 3.5 12l5 5M15.5 7l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="full">কোড ও বিস্তারিত</span><span class="short">বিস্তারিত</span>
+            </a>
+            <a class="act" href="/playground/#p={{ encodeURIComponent(props.p.pattern) }}&f={{ encodeURIComponent(props.p.flags + 'gm') }}&t={{ encodeURIComponent(props.p.should_match.join('\n') + '\n' + props.p.should_not_match.join('\n')) }}">
+                <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg>
+                <span class="full">Playground-এ খুলুন</span><span class="short">Playground</span>
+            </a>
+        </div>
+    </article>
+</template>

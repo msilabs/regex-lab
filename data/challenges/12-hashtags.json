@@ -1,0 +1,28 @@
+{
+    "title": "#hashtag বের করো",
+    "level": "কঠিন",
+    "type": "extract",
+    "task": "লেখা থেকে সব #hashtag-এর নাম (# ছাড়া) বের করুন (g flag দিন)।",
+    "cases": [
+        {
+            "text": "love #regex and #বাংলা",
+            "expect": [
+                "regex"
+            ]
+        },
+        {
+            "text": "#a #b_2 c#d",
+            "expect": [
+                "a",
+                "b_2"
+            ]
+        },
+        {
+            "text": "none",
+            "expect": []
+        }
+    ],
+    "hint": "# আক্ষরিক, তার পরে \\w+। কিন্তু c#d-এর মতো শব্দের মাঝের # ধরা যাবে না। এর আগে কী থাকতে পারে? (?<!\\w) দেখুন।",
+    "solution": "(?<!\\w)#(\\w+)",
+    "flags": "g"
+}

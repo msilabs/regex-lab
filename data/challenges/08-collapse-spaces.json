@@ -1,0 +1,24 @@
+{
+    "title": "একাধিক ফাঁকা জায়গা এক করো",
+    "level": "মাঝারি",
+    "type": "replace",
+    "task": "যেখানেই দুই বা তার বেশি ফাঁকা জায়গা পাশাপাশি আছে, সেখানে ঠিক একটা ফাঁকা জায়গা বসাও। replacement ঘরে একটা space লিখুন আর g flag দিন।",
+    "cases": [
+        {
+            "text": "a   b  c",
+            "expect": "a b c"
+        },
+        {
+            "text": "x y",
+            "expect": "x y"
+        },
+        {
+            "text": "one     two",
+            "expect": "one two"
+        }
+    ],
+    "hint": "pattern: \" {2,}\", replacement: \" \", flag: g",
+    "solution": " {2,}",
+    "flags": "g",
+    "replacement": " "
+}

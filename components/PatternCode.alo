@@ -1,0 +1,24 @@
+<!-- pattern দেখায়, ডান পাশে copy বাটন। যা দেখায় হুবহু সেটাই কপি হয়। -->
+<template>
+    <div class="pat-wrap {{ props.class }}">
+        <pre class="pat-code">{{ props.text }}</pre>
+        <button type="button" class="copy-btn" data-text="{{ props.text }}" title="কপি করুন" aria-label="pattern কপি করুন">
+            <svg class="i-copy" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <svg class="i-done" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+    </div>
+</template>
+
+<script>
+    const btn = $el.querySelector('.copy-btn');
+    let timer = null;
+    btn.addEventListener('click', (event) => {
+        event.preventDefault();
+        window.RegexUtil.copy(btn.dataset.text).then((ok) => {
+            btn.classList.toggle('done', ok);
+            btn.title = ok ? 'কপি হয়েছে' : 'কপি হয়নি';
+            clearTimeout(timer);
+            timer = setTimeout(() => { btn.classList.remove('done'); btn.title = 'কপি করুন'; }, 1500);
+        });
+    });
+</script>

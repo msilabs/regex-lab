@@ -1,0 +1,31 @@
+{
+    "title": "পরপর একই শব্দ দুবার",
+    "level": "কঠিন",
+    "type": "match",
+    "task": "লেখায় কোনো শব্দ ফাঁকা দিয়ে পরপর দুবার থাকলে সত্য (যেমন \"the the\")।",
+    "cases": [
+        {
+            "text": "the the cat",
+            "expect": true
+        },
+        {
+            "text": "go go go",
+            "expect": true
+        },
+        {
+            "text": "the cat",
+            "expect": false
+        },
+        {
+            "text": "theme the",
+            "expect": false
+        },
+        {
+            "text": "a b a",
+            "expect": false
+        }
+    ],
+    "hint": "প্রথম শব্দটাকে () দিয়ে ধরে \\1 দিয়ে আবার চান। শব্দের সীমা \\b দিয়ে।",
+    "solution": "\\b(\\w+) \\1\\b",
+    "flags": ""
+}

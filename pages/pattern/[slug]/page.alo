@@ -1,0 +1,114 @@
+<head>
+    <title>{{ item.title }} regex · {{ data.site.name }}</title>
+    <meta name="description" content="{{ item.title }}: {{ item.explain }}">
+</head>
+
+<template>
+<div class="wrap" id="libItem" data-pattern="{{ item.pattern }}" data-flags="{{ item.flags }}">
+  <p class="crumbs"><a href="/">← সব pattern</a></p>
+  <section class="intro">
+    <h1>{{ item.title }}</h1>
+    <p>{{ item.explain }}</p>
+  </section>
+
+  <section class="card">
+    <h2>pattern</h2>
+    <PatternCode text="/{{ item.pattern }}/{{ item.flags }}" class="big" />
+    <div class="row-flex">
+      <a class="btn primary" href="/playground/#p={{ encodeURIComponent(item.pattern) }}&f={{ encodeURIComponent(item.flags + 'gm') }}&t={{ encodeURIComponent(item.should_match.join('\n') + '\n' + item.should_not_match.join('\n')) }}">Playground-এ খুলুন</a>
+    </div>
+    <template if="item.notes">
+      <p class="muted" style="margin-top:12px">ⓘ {{ item.notes }}</p>
+    </template>
+  </section>
+
+  <div class="grid-2">
+    <section class="card">
+      <h2>যা মিলবে</h2>
+      <ul class="exlist">
+        <template for="t in item.should_match">
+          <li class="yes"><span class="mk">✓</span><span>{{ t }}</span></li>
+        </template>
+      </ul>
+    </section>
+    <section class="card">
+      <h2>যা মিলবে না</h2>
+      <ul class="exlist">
+        <template for="t in item.should_not_match">
+          <li class="no"><span class="mk">✗</span><span>{{ t === '' ? '(খালি লেখা)' : t }}</span></li>
+        </template>
+      </ul>
+    </section>
+  </div>
+
+  <section class="card">
+    <h2>নিজে পরীক্ষা করুন</h2>
+    <input class="tester" id="tester" type="text" spellcheck="false" autocomplete="off" placeholder="এখানে একটা লেখা দিন" aria-label="পরীক্ষার লেখা">
+    <p id="testerOut" style="margin:10px 0 0"></p>
+  </section>
+
+  <section class="card">
+    <h2>কোড</h2>
+    <div class="chips" id="codeTabs">
+      <button type="button" class="chip on" data-lang="js">JavaScript</button>
+      <button type="button" class="chip" data-lang="php">PHP</button>
+      <button type="button" class="chip" data-lang="laravel">Laravel</button>
+      <button type="button" class="chip" data-lang="python">Python</button>
+    </div>
+    <div class="code-block">
+      <button type="button" class="btn small" id="codeCopy">কপি</button>
+      <pre id="codeOut"><code></code></pre>
+    </div>
+    <div id="codeNotes"></div>
+  </section>
+</div>
+</template>
+
+<script>
+(function () {
+    var root = document.getElementById('libItem');
+    var U = window.RegexUtil;
+    var pattern = root.dataset.pattern;
+    var flags = root.dataset.flags;
+    var re = new RegExp(pattern, flags.replace(/[gy]/g, ''));
+    var tester = document.getElementById('tester');
+    var out = document.getElementById('testerOut');
+
+    tester.addEventListener('input', function () {
+        if (tester.value === '') { out.innerHTML = ''; return; }
+        var ok = re.test(tester.value);
+        out.innerHTML = ok ? '<span class="badge ok">✓ মিলেছে</span>' : '<span class="badge bad">✗ মেলেনি</span>';
+    });
+
+    var code = null;
+    var lang = 'js';
+    var pre = document.querySelector('#codeOut code');
+    var notes = document.getElementById('codeNotes');
+
+    function render() {
+        if (!code) return;
+        pre.textContent = code[lang];
+        notes.innerHTML = (code.notes[lang] || []).map(function (n) { return '<p class="code-note">ⓘ ' + U.escapeHtml(n) + '</p>'; }).join('');
+    }
+
+    window.RegexEngine.call('codegen', { pattern: pattern, flags: flags, mode: 'match', replacement: '' }).then(function (result) {
+        code = result;
+        render();
+    });
+
+    document.getElementById('codeTabs').addEventListener('click', function (event) {
+        var btn = event.target.closest('button[data-lang]');
+        if (!btn) return;
+        lang = btn.dataset.lang;
+        document.querySelectorAll('#codeTabs button').forEach(function (b) { b.classList.toggle('on', b === btn); });
+        render();
+    });
+    document.getElementById('codeCopy').addEventListener('click', function () {
+        var btn = document.getElementById('codeCopy');
+        U.copy(pre.textContent).then(function (ok) {
+            btn.textContent = ok ? 'কপি হয়েছে ✓' : 'কপি হয়নি';
+            setTimeout(function () { btn.textContent = 'কপি'; }, 1400);
+        });
+    });
+})();
+</script>

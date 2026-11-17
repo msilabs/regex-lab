@@ -1,0 +1,109 @@
+<head>
+    <title>{{ item.title }} · Learn · {{ data.site.name }}</title>
+    <meta name="description" content="{{ item.summary }}">
+</head>
+
+<template>
+<div class="wrap">
+  <div class="side-layout lesson-layout">
+    <article class="card lesson">
+      <p class="crumbs"><a href="/learn/">Learn</a> · পাঠ {{ item.order.toLocaleString('bn-BD') }} / {{ data.learn.length.toLocaleString('bn-BD') }}</p>
+      <h1>{{ item.title }}</h1>
+      <div class="lesson-body" id="lessonBody">{{{ item.body }}}</div>
+
+      <nav class="pager" aria-label="আগের আর পরের পাঠ">
+        <template if="data.learn.find((l) => l.order === item.order - 1)">
+          <a class="pager-link" href="/learn/{{ data.learn.find((l) => l.order === item.order - 1).slug }}/">
+            <small>← আগের পাঠ</small>{{ data.learn.find((l) => l.order === item.order - 1).title }}
+          </a>
+        </template>
+        <template else><span></span></template>
+        <template if="data.learn.find((l) => l.order === item.order + 1)">
+          <a class="pager-link next" href="/learn/{{ data.learn.find((l) => l.order === item.order + 1).slug }}/">
+            <small>পরের পাঠ →</small>{{ data.learn.find((l) => l.order === item.order + 1).title }}
+          </a>
+        </template>
+        <template else>
+          <a class="pager-link next" href="/challenge/"><small>সব পাঠ শেষ →</small>এবার Challenge-এ নিজেকে পরীক্ষা করুন</a>
+        </template>
+      </nav>
+    </article>
+
+    <aside class="card side-list outline" aria-label="সব পাঠ">
+      <template for="l in data.learn.toSorted((a, b) => a.order - b.order)">
+        <a class="side-item {{ l.slug === item.slug ? 'cur' : '' }}" href="/learn/{{ l.slug }}/">
+          <span class="st">{{ l.order.toLocaleString('bn-BD') }}</span><span>{{ l.title }}</span>
+        </a>
+      </template>
+    </aside>
+  </div>
+</div>
+</template>
+
+<script>
+(function () {
+    var U = window.RegexUtil;
+    var Engine = window.RegexEngine;
+    var base = document.documentElement.dataset.base || '/';
+
+    // ```regex ব্লক: প্রথম লাইনে /pattern/flags, বাকি লাইনগুলো লেখা
+    function parseBlock(source) {
+        var lines = source.replace(/\n$/, '').split('\n');
+        var head = lines.shift();
+        var slash = head.lastIndexOf('/');
+        if (head[0] !== '/' || slash < 1) return null;
+        return { pattern: head.slice(1, slash), flags: head.slice(slash + 1), text: lines.join('\n') };
+    }
+
+    function build(code) {
+        var info = parseBlock(code.textContent);
+        if (!info) return;
+        var box = document.createElement('div');
+        box.className = 'try';
+        box.innerHTML =
+            '<div class="try-head"><span class="try-label">নিজে বদলে দেখুন</span><span class="count"></span><span class="spacer"></span><a class="try-open" href="#">Playground-এ খুলুন →</a></div>'
+            + '<div class="pat"><span class="pat-sl">/</span><div class="pat-box"><input class="pat-in plain" type="text" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="pattern"></div><span class="pat-sl">/' + U.escapeHtml(info.flags) + '</span></div>'
+            + '<div class="text-box"><pre class="text-hl" aria-hidden="true"></pre><textarea class="text-in" spellcheck="false" aria-label="লেখা"></textarea></div>'
+            + '<div class="errbox" hidden></div>';
+        code.parentNode.replaceWith(box);
+
+        var input = box.querySelector('.pat-in');
+        var area = box.querySelector('.text-in');
+        var hl = box.querySelector('.text-hl');
+        var count = box.querySelector('.count');
+        var err = box.querySelector('.errbox');
+        var open = box.querySelector('.try-open');
+        var seq = 0;
+
+        input.value = info.pattern;
+        area.value = info.text;
+        area.rows = Math.max(1, info.text.split('\n').length);
+
+        function update() {
+            var my = ++seq;
+            var pattern = input.value;
+            var text = area.value;
+            open.href = base + 'playground/#p=' + encodeURIComponent(pattern) + '&f=' + encodeURIComponent(info.flags) + '&t=' + encodeURIComponent(text);
+            if (pattern === '') { hl.innerHTML = U.highlight(text, []); count.textContent = ''; err.hidden = true; return; }
+            Engine.call('match', { pattern: pattern, flags: info.flags, text: text, mode: 'match' }).then(function (out) {
+                if (my !== seq) return;
+                err.hidden = !out.error;
+                if (out.error) { err.textContent = out.error.message; count.textContent = ''; hl.innerHTML = U.highlight(text, []); return; }
+                hl.innerHTML = U.highlight(text, out.matches);
+                count.textContent = out.total ? U.bn(out.total) + 'টা মিল' : 'কোনো মিল নেই';
+            }, function (reason) {
+                if (my !== seq) return;
+                hl.innerHTML = U.highlight(text, []);
+                count.textContent = reason && reason.timeout ? U.timeoutMessage : '';
+            });
+        }
+
+        var soon = U.debounce(update, 150);
+        input.addEventListener('input', soon);
+        area.addEventListener('input', function () { hl.innerHTML = U.highlight(area.value, []); soon(); });
+        update();
+    }
+
+    document.querySelectorAll('#lessonBody pre > code.language-regex').forEach(build);
+})();
+</script>

@@ -1,0 +1,20 @@
+{
+    "title": "URL slug",
+    "category": "common",
+    "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+    "flags": "",
+    "explain": "ছোট হাতের ইংরেজি অক্ষর আর সংখ্যা, শব্দের মাঝে একটা করে -। শুরু বা শেষে -, বা পরপর দুটো - চলবে না।",
+    "should_match": [
+        "hello-world",
+        "regex-101",
+        "a"
+    ],
+    "should_not_match": [
+        "Hello",
+        "hello--world",
+        "-hello",
+        "hello-"
+    ],
+    "notes": "",
+    "order": 21
+}

@@ -1,0 +1,31 @@
+{
+    "title": "\"cat\" বা \"dog\" দিয়ে শুরু",
+    "level": "সহজ",
+    "type": "match",
+    "task": "লেখা \"cat\" বা \"dog\" দিয়ে শুরু হলে সত্য। বাকি অংশ যা-ই হোক।",
+    "cases": [
+        {
+            "text": "cat food",
+            "expect": true
+        },
+        {
+            "text": "dogs",
+            "expect": true
+        },
+        {
+            "text": "hotdog",
+            "expect": false
+        },
+        {
+            "text": "a cat",
+            "expect": false
+        },
+        {
+            "text": "bird",
+            "expect": false
+        }
+    ],
+    "hint": "^ শুরু বোঝায়, | মানে \"অথবা\"। দুটোকে () দিয়ে বাঁধুন।",
+    "solution": "^(?:cat|dog)",
+    "flags": ""
+}
