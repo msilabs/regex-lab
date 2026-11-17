@@ -65,9 +65,9 @@
     var U = window.RegexUtil;
     var STORE_KEY = 'regex-lab-state';
     var EXAMPLE = {
-        pattern: '(\\+88)?01\\d{9}\\b',
+        pattern: '(\\+88)?01[3-9]\\d{8}\\b',
         flags: 'g',
-        text: 'ফোন করুন 01712345678 অথবা +8801712345678 নম্বরে।\nঅফিস: 01912345678, অর্ডার নম্বর: 2017123456789'
+        text: 'ফোন করুন 01712345678 অথবা +8801712345678 নম্বরে।\nঅফিস: 01912345678, ভুল নম্বর: 01212345678'
     };
 
     var $ = function (id) { return document.getElementById(id); };
