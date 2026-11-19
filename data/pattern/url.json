@@ -3,7 +3,7 @@
     "category": "common",
     "pattern": "^https?:\\/\\/(?:[\\w-]+\\.)+[A-Za-z]{2,}(?::\\d{2,5})?(?:\\/[^\\s]*)?$",
     "flags": "",
-    "explain": "http:// বা https:// দিয়ে শুরু, তারপর domain। শেষে ঐচ্ছিক port (:8080) আর path (/a/b?x=1) থাকতে পারে।",
+    "explain": "http:// বা https:// দিয়ে শুরু, তারপর domain। শেষে চাইলে port (:8080) আর path (/a/b?x=1) থাকতে পারে।",
     "should_match": [
         "https://example.com",
         "http://sub.site.org:8080/a/b?x=1",

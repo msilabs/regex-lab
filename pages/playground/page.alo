@@ -24,7 +24,7 @@
       </div>
       <div class="flagbar" id="flagbar" role="group" aria-label="flag">
         <button type="button" class="flag" data-flag="g" title="g: সব মিল খোঁজে, প্রথমটায় থামে না">g</button>
-        <button type="button" class="flag" data-flag="i" title="i: বড় হাত আর ছোট হাতের অক্ষর একই ধরে">i</button>
+        <button type="button" class="flag" data-flag="i" title="i: বড় আর ছোট হাতের অক্ষর একই ধরে">i</button>
         <button type="button" class="flag" data-flag="m" title="m: ^ আর $ প্রতিটা লাইনের শুরু আর শেষ ধরে">m</button>
         <button type="button" class="flag" data-flag="s" title="s: . নতুন লাইনও ধরে">s</button>
         <button type="button" class="flag" data-flag="u" title="u: Unicode পুরোপুরি বোঝে, \p{Script=Bengali} চলে">u</button>
@@ -53,7 +53,7 @@
   </section>
 
   <section class="card">
-    <h2>বাংলা ব্যাখ্যা <small>কোনো লাইনে mouse রাখলে pattern-এর সেই অংশ জ্বলে উঠবে</small></h2>
+    <h2>বাংলা ব্যাখ্যা <small>কোনো লাইনে mouse রাখলে pattern-এর সেই অংশ হাইলাইট হবে</small></h2>
     <div id="explain"></div>
   </section>
 </div>

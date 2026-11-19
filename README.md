@@ -19,12 +19,12 @@ pattern লিখুন, লেখায় কোথায় মিলছে �
 ![Playground](docs/screenshots/playground.png)
 
 ### Learn
-১৬টা ছোট পাঠ, শুরু থেকে: সাধারণ অক্ষর, `[ ]`, `\d`, গোনা, greedy আর lazy, `^ $ \b`, group, lookaround, flag, বাংলা লেখায় regex, backtracking আর ReDoS, আর কোডে ব্যবহার। প্রতিটা পাঠে এমন উদাহরণ আছে যা নিজে বদলে দেখা যায়।
+১৬টা ছোট পাঠ, শুরু থেকে: সাধারণ অক্ষর, `[ ]`, `\d`, quantifier, greedy আর lazy, `^ $ \b`, group, lookaround, flag, বাংলা লেখায় regex, backtracking আর ReDoS, আর কোডে ব্যবহার। প্রতিটা পাঠে এমন উদাহরণ আছে যা নিজে বদলে দেখা যায়।
 
 ![Learn-এর পাঠ](docs/screenshots/lesson.png)
 
 ### Challenge
-১৫টা অনুশীলন, সহজ থেকে কঠিন। সব test case পাস করলে পরেরটা খুলে যায়। অগ্রগতি শুধু আপনার browser-এ থাকে।
+১৫টা অনুশীলন, সহজ থেকে কঠিন। সব test case পাস করলে পরেরটা খুলে যায়। progress শুধু আপনার browser-এ থাকে।
 
 ![Challenge](docs/screenshots/challenge.png)
 

@@ -13,7 +13,7 @@
     <a class="cta" href="/learn/{{ data.learn.find((l) => l.order === 1).slug }}/">প্রথম পাঠ শুরু করুন <span class="cta-arrow" aria-hidden="true">→</span></a>
   </section>
 
-  <template for="stage in [{ name: 'শুরু', note: 'regex কী, অক্ষর আর দল', from: 1, to: 6 }, { name: 'পরের ধাপ', note: 'গোনা, সীমা, group আর বিকল্প', from: 7, to: 11 }, { name: 'গভীরে', note: 'lookaround, flag, বাংলা লেখা আর নিরাপত্তা', from: 12, to: 99 }]">
+  <template for="stage in [{ name: 'শুরু', note: 'regex কী, অক্ষর আর সেট', from: 1, to: 6 }, { name: 'পরের ধাপ', note: 'quantifier, সীমা, group আর বিকল্প', from: 7, to: 11 }, { name: 'গভীরে', note: 'lookaround, flag, বাংলা লেখা আর নিরাপত্তা', from: 12, to: 99 }]">
     <section class="stage">
       <div class="stage-head">
         <h2 class="section-title">{{ stage.name }}</h2>
