@@ -59,13 +59,13 @@
         if (!node) return found;
         if (node.type === 'quant' && unbounded(node)) {
             if (containsUnbounded(node.body)) {
-                found.push({ kind: 'nested', node: node, text: 'গোনার ভেতরে আবার গোনা: ' + pattern.slice(node.start, node.end) });
+                found.push({ kind: 'nested', node: node, text: 'quantifier-এর ভেতরে আবার quantifier: ' + pattern.slice(node.start, node.end) });
             } else if (node.body.type === 'group' && node.body.body && node.body.body.type === 'alt') {
                 var alts = node.body.body.alternatives.map(function (alt) { return probeSet(pattern, firstAtom(alt), flags); });
                 for (var i = 0; i < alts.length; i++) {
                     for (var j = i + 1; j < alts.length; j++) {
                         if (overlap(alts[i], alts[j])) {
-                            found.push({ kind: 'alt', node: node, text: 'গোনার ভেতরে এমন একাধিক পথ যারা একই অক্ষর ধরতে পারে: ' + pattern.slice(node.start, node.end) });
+                            found.push({ kind: 'alt', node: node, text: 'quantifier-এর ভেতরে এমন একাধিক পথ যারা একই অক্ষরে মিলতে পারে: ' + pattern.slice(node.start, node.end) });
                             i = alts.length;
                             break;
                         }
@@ -80,7 +80,7 @@
                 if (unbounded(left) && unbounded(right) && left.max === Infinity && right.max === Infinity && isSimpleAtom(left.body) && isSimpleAtom(right.body)) {
                     var l = probeSet(pattern, firstAtom(left), flags);
                     var r = probeSet(pattern, firstAtom(right), flags);
-                    if (overlap(l, r)) found.push({ kind: 'adjacent', node: left, text: 'পাশাপাশি দুটো গোনা একই অক্ষর ধরতে পারে: ' + pattern.slice(left.start, right.end) });
+                    if (overlap(l, r)) found.push({ kind: 'adjacent', node: left, text: 'পাশাপাশি দুটো quantifier একই অক্ষরে মিলতে পারে: ' + pattern.slice(left.start, right.end) });
                 }
             }
         }
@@ -112,9 +112,9 @@
 
     function suggestion(found) {
         var kinds = found.map(function (f) { return f.kind; });
-        if (kinds.indexOf('nested') !== -1) return 'ভেতরের আর বাইরের গোনা মিলিয়ে একটা করুন। যেমন (a+)+ -এর বদলে a+ লিখলে একই জিনিস ধরে, অথচ ধাপ বাড়ে সোজাসুজি।';
+        if (kinds.indexOf('nested') !== -1) return 'ভেতরের আর বাইরের quantifier মিলিয়ে একটা করুন। যেমন (a+)+ -এর বদলে a+ লিখলে একই জিনিসে মেলে, অথচ ধাপ বাড়ে সোজাসুজি।';
         if (kinds.indexOf('alt') !== -1) return 'পথগুলো এমনভাবে ভাগ করুন যেন কোনো অক্ষর দুই পথে মিলতে না পারে। যেমন (a|a)* -এর বদলে a*।';
-        return 'দুটো গোনার একটাকে সরু করুন, যেন একই অক্ষর দুটোয় মিলতে না পারে। যেমন \\d+\\d+ -এর বদলে \\d{2,}।';
+        return 'দুটো quantifier-এর একটাকে সরু করুন, যেন একই অক্ষর দুটোয় মিলতে না পারে। যেমন \\d+\\d+ -এর বদলে \\d{2,}।';
     }
 
     function analyze(pattern, flags) {
@@ -137,7 +137,7 @@
         var confirmed = growsFast(steps);
 
         // গঠন সন্দেহজনক হলেও চালিয়ে ধাপ না বাড়লে ঝুঁকি নেই (যেমন মাঝে ডট বা হাইফেন থাকলে)।
-        // শুধু পাশাপাশি একই অক্ষরের গোনা ধীরে বাড়ে (বহুপদী), সেটা ধাপ গুনে ধরা পড়ে না, তাই সতর্কবার্তা থাকে।
+        // শুধু পাশাপাশি একই অক্ষরের quantifier ধীরে বাড়ে (বহুপদী), সেটা ধাপ গুনে ধরা পড়ে না, তাই সতর্কবার্তা থাকে।
         if (!confirmed) {
             found = found.filter(function (f) { return f.kind === 'adjacent'; });
             if (!found.length) return { risk: 'none', reasons: [] };

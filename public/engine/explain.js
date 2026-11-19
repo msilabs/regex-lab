@@ -96,7 +96,7 @@
     }
 
     function ignoreCaseNote(flags) {
-        return flags.indexOf('i') !== -1 ? ' (ছোট-বড় হাতের পার্থক্য ধরা হয় না)' : '';
+        return flags.indexOf('i') !== -1 ? ' (ছোট-বড় হাতের পার্থক্য করা হয় না)' : '';
     }
 
     // কোনো node-এর এক লাইনের বাংলা মানে। সন্তান থাকলে আলাদা লাইনে আসে।
@@ -115,14 +115,14 @@
             case 'boundary':
                 return node.kind === 'b' ? 'শব্দের সীমা: এক পাশে ইংরেজি অক্ষর/সংখ্যা, অন্য পাশে নেই' : 'শব্দের সীমা নয়: দুই পাশেই অক্ষর অথবা দুই পাশেই অক্ষর নয়';
             case 'backref':
-                return node.name ? '"' + node.name + '" group যা ধরেছিল ঠিক সেটাই আবার' : bn(node.index) + ' নম্বর group যা ধরেছিল ঠিক সেটাই আবার';
+                return node.name ? '"' + node.name + '" group যা capture করেছিল ঠিক সেটাই আবার' : bn(node.index) + ' নম্বর group যা capture করেছিল ঠিক সেটাই আবার';
             case 'group':
-                if (node.name) return '"' + node.name + '" নামের group (' + bn(node.index) + ' নম্বর), মিলে যাওয়া অংশ আলাদা করে রাখে';
-                if (node.capture) return bn(node.index) + ' নম্বর group, মিলে যাওয়া অংশ আলাদা করে রাখে';
-                return 'group যা অংশ আলাদা করে রাখে না (শুধু একসাথে বাঁধে)';
+                if (node.name) return '"' + node.name + '" নামের group (' + bn(node.index) + ' নম্বর), মিলে যাওয়া অংশ capture করে';
+                if (node.capture) return bn(node.index) + ' নম্বর group, মিলে যাওয়া অংশ capture করে';
+                return 'group যা অংশ capture করে না (শুধু একসাথে group করে)';
             case 'look':
-                if (node.ahead) return node.negate ? 'এর ঠিক পরে নিচেরটা থাকলে চলবে না (পরে দেখে, কিছু ধরে না)' : 'এর ঠিক পরে নিচেরটা থাকতে হবে (পরে দেখে, কিছু ধরে না)';
-                return node.negate ? 'এর ঠিক আগে নিচেরটা থাকলে চলবে না (আগে দেখে, কিছু ধরে না)' : 'এর ঠিক আগে নিচেরটা থাকতে হবে (আগে দেখে, কিছু ধরে না)';
+                if (node.ahead) return node.negate ? 'এর ঠিক পরে নিচেরটা থাকলে চলবে না (পরে দেখে, কিছু নেয় না)' : 'এর ঠিক পরে নিচেরটা থাকতে হবে (পরে দেখে, কিছু নেয় না)';
+                return node.negate ? 'এর ঠিক আগে নিচেরটা থাকলে চলবে না (আগে দেখে, কিছু নেয় না)' : 'এর ঠিক আগে নিচেরটা থাকতে হবে (আগে দেখে, কিছু নেয় না)';
             case 'alt': return 'এর যেকোনো একটা পথ মিললেই হবে (বাঁ দিক থেকে চেষ্টা)';
             case 'quant': {
                 var text = quantText(node);
@@ -161,8 +161,8 @@
     function warnings(pattern, flags) {
         var out = [];
         var unicode = flags.indexOf('u') !== -1 || flags.indexOf('v') !== -1;
-        if (/\\d/.test(pattern)) out.push('\\d শুধু ইংরেজি সংখ্যা (0-9) ধরে। বাংলা সংখ্যা (০-৯) ধরতে [০-৯] লিখুন।');
-        if (/\\w/.test(pattern)) out.push('\\w বাংলা অক্ষর ধরে না। বাংলা অক্ষরের জন্য [\\u0980-\\u09FF] বা u flag দিয়ে \\p{Script=Bengali} লিখুন।');
+        if (/\\d/.test(pattern)) out.push('\\d শুধু ইংরেজি সংখ্যায় (0-9) মেলে। বাংলা সংখ্যা (০-৯) মেলাতে [০-৯] লিখুন।');
+        if (/\\w/.test(pattern)) out.push('\\w বাংলা অক্ষরে মেলে না। বাংলা অক্ষরের জন্য [\\u0980-\\u09FF] বা u flag দিয়ে \\p{Script=Bengali} লিখুন।');
         if (/[ঀ-৿]/.test(pattern) && !unicode && /[ঀ-৿]\s*[*+?{]/.test(pattern)) {
             out.push('বাংলা যুক্তাক্ষর বা কারচিহ্ন আলাদা Unicode অক্ষর। ' + 'একটা "অক্ষর" দেখতে এক হলেও ভেতরে একাধিক হতে পারে।');
         }

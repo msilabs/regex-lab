@@ -15,6 +15,6 @@
         "https://",
         "https://exa mple.com"
     ],
-    "notes": "localhost বা IP address ঠিকানা এটা ধরে না।",
+    "notes": "localhost বা IP address ঠিকানা এতে মেলে না।",
     "order": 6
 }

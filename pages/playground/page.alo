@@ -25,8 +25,8 @@
       <div class="flagbar" id="flagbar" role="group" aria-label="flag">
         <button type="button" class="flag" data-flag="g" title="g: সব মিল খোঁজে, প্রথমটায় থামে না">g</button>
         <button type="button" class="flag" data-flag="i" title="i: বড় আর ছোট হাতের অক্ষর একই ধরে">i</button>
-        <button type="button" class="flag" data-flag="m" title="m: ^ আর $ প্রতিটা লাইনের শুরু আর শেষ ধরে">m</button>
-        <button type="button" class="flag" data-flag="s" title="s: . নতুন লাইনও ধরে">s</button>
+        <button type="button" class="flag" data-flag="m" title="m: ^ আর $ প্রতিটা লাইনের শুরু আর শেষে মেলে">m</button>
+        <button type="button" class="flag" data-flag="s" title="s: . নতুন লাইনেও মেলে">s</button>
         <button type="button" class="flag" data-flag="u" title="u: Unicode পুরোপুরি বোঝে, \p{Script=Bengali} চলে">u</button>
       </div>
     </div>

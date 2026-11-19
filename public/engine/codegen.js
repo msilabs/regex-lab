@@ -147,7 +147,7 @@
         } else {
             python = 'import re\n\nm = re.search(' + pyPattern + pyFlagText + ', text)\nif m:\n    print(m.group(0), m.start())';
         }
-        if (/\\d/.test(pattern)) notes.python.push('Python-এ \\d বাংলা সংখ্যাও (০-৯) ধরে। শুধু 0-9 চাইলে re.A flag দিন বা [0-9] লিখুন।');
+        if (/\\d/.test(pattern)) notes.python.push('Python-এ \\d বাংলা সংখ্যায়ও (০-৯) মেলে। শুধু 0-9 চাইলে re.A flag দিন বা [0-9] লিখুন।');
         if (/\\p\{/.test(pattern)) notes.python.push('Python-এর বিল্ট-ইন re মডিউলে \\p{...} নেই। তৃতীয় পক্ষের regex প্যাকেজ লাগবে, অথবা [\\u0980-\\u09FF] লিখুন।');
         if (/\(\?<[=!]/.test(pattern)) notes.python.push('Python-এর lookbehind-এ লম্বা অংশ ঠিক একই দৈর্ঘ্যের হতে হয়।');
 

@@ -96,17 +96,17 @@
             else if (c === '?') { range = { min: 0, max: 1 }; pos++; }
             else if (c === '{') {
                 range = tryBraceQuantifier();
-                if (!range && unicode) throw new ParseError('{ এখানে ঠিকমতো গোনার চিহ্ন নয়। আক্ষরিক { লিখতে \\{ লিখুন', pos);
+                if (!range && unicode) throw new ParseError('{ এখানে ঠিকমতো quantifier নয়। আক্ষরিক { লিখতে \\{ লিখুন', pos);
             }
             if (!range) return atom;
             var lazy = false;
             if (peek() === '?') { lazy = true; pos++; }
             var lookaround = atom.type === 'look';
             if (lookaround && (unicode || !atom.ahead)) {
-                throw new ParseError('lookaround-এর পরে গোনার চিহ্ন বসানো যায় না', quantStart);
+                throw new ParseError('lookaround-এর পরে quantifier বসানো যায় না', quantStart);
             }
             if (atom.type === 'anchor' || atom.type === 'boundary') {
-                throw new ParseError('এই চিহ্ন কোনো অক্ষর ধরে না, তাই এর পরে গোনার চিহ্ন বসানো যায় না', quantStart);
+                throw new ParseError('এই চিহ্ন কোনো অক্ষর নেয় না, তাই এর পরে quantifier বসানো যায় না', quantStart);
             }
             return {
                 type: 'quant', min: range.min, max: range.max, lazy: lazy, body: atom,
@@ -127,12 +127,12 @@
             var before = groupCount;
 
             if (c === '*' || c === '+' || c === '?') {
-                throw new ParseError('"' + c + '" কিসের গোনা? এর আগে একটা অক্ষর বা group লাগবে', pos);
+                throw new ParseError('"' + c + '" কিসের quantifier? এর আগে একটা অক্ষর বা group লাগবে', pos);
             }
             if (c === '{') {
                 var save = pos;
-                if (tryBraceQuantifier()) { pos = save; throw new ParseError('{...} কিসের গোনা? এর আগে একটা অক্ষর বা group লাগবে', pos); }
-                if (unicode) throw new ParseError('{ এখানে ঠিকমতো গোনার চিহ্ন নয়। আক্ষরিক { লিখতে \\{ লিখুন', pos);
+                if (tryBraceQuantifier()) { pos = save; throw new ParseError('{...} কিসের quantifier? এর আগে একটা অক্ষর বা group লাগবে', pos); }
+                if (unicode) throw new ParseError('{ এখানে ঠিকমতো quantifier নয়। আক্ষরিক { লিখতে \\{ লিখুন', pos);
             }
             if (c === '(') return parseGroup(before);
             if (c === '[') return parseClass();
@@ -262,7 +262,7 @@
                 var numStart = pos;
                 var num = readNumber();
                 if (num <= totalGroups) return { type: 'backref', index: num, start: start, end: pos };
-                if (unicode) throw new ParseError('\\' + num + ' দিয়ে যে group ধরতে চান সেটা নেই (মোট group ' + totalGroups + 'টা)', start, pos - start);
+                if (unicode) throw new ParseError('\\' + num + ' দিয়ে যে group capture করতে চান সেটা নেই (মোট group ' + totalGroups + 'টা)', start, pos - start);
                 pos = numStart + 1;
                 return { type: 'char', value: c, start: start, end: pos };
             }
@@ -376,18 +376,18 @@
         if (/Unterminated group/i.test(m)) return 'একটা ( খোলা হয়েছে কিন্তু বন্ধ হয়নি';
         if (/Unmatched '\)'/i.test(m)) return 'একটা ) আছে যার সাথে মেলানোর কোনো ( নেই';
         if (/Unterminated character class/i.test(m)) return 'একটা [ খোলা হয়েছে কিন্তু বন্ধ হয়নি';
-        if (/Nothing to repeat/i.test(m)) return 'গোনার চিহ্নের (* + ? {}) আগে কিছু নেই';
+        if (/Nothing to repeat/i.test(m)) return 'quantifier-এর (* + ? {}) আগে কিছু নেই';
         if (/Invalid group/i.test(m)) return '(? -এর পরে ভুল চিহ্ন';
         if (/Invalid escape|Invalid unicode escape|Invalid Unicode escape/i.test(m)) return 'ভুল escape (\\ দিয়ে লেখা অংশ)';
         if (/Range out of order/i.test(m)) return 'range উল্টো: শেষের অক্ষর শুরুর অক্ষরের আগে পড়ে';
         if (/Invalid capture group name/i.test(m)) return 'group-এর নাম ঠিক নয়';
         if (/Duplicate capture group name/i.test(m)) return 'একই নামে দুটো group';
-        if (/Invalid named reference|Invalid named capture referenced/i.test(m)) return 'যে নামের group ধরতে চান সেটা নেই';
+        if (/Invalid named reference|Invalid named capture referenced/i.test(m)) return 'যে নামের group capture করতে চান সেটা নেই';
         if (/Invalid property name/i.test(m)) return 'চেনা Unicode property নয়';
         if (/Invalid flags|invalid flag/i.test(m)) return 'flag ভুল। চলে: g i m s u d y';
         if (/Lone quantifier brackets/i.test(m)) return 'এই { বা } একা আছে। আক্ষরিক লিখতে \\{ বা \\}';
         if (/\\ at end of pattern/i.test(m)) return 'শেষে একটা \\ আছে, কিন্তু এর পরে কিছু নেই';
-        if (/Incomplete quantifier/i.test(m)) return 'গোনার চিহ্ন অসম্পূর্ণ';
+        if (/Incomplete quantifier/i.test(m)) return 'quantifier অসম্পূর্ণ';
         return 'pattern ঠিক নয়: ' + m;
     }
 

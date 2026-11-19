@@ -16,6 +16,6 @@
         "1.2.3.4",
         "v1.2.3"
     ],
-    "notes": "package.json-এর ভার্সন যাচাইয়ে কাজে লাগে। build metadata (+build.5) এখানে ধরা হয়নি।",
+    "notes": "package.json-এর ভার্সন যাচাইয়ে কাজে লাগে। build metadata (+build.5) এখানে বিবেচনা করা হয়নি।",
     "order": 23
 }
